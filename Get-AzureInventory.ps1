@@ -50,7 +50,7 @@ foreach ($subscription in $subscriptions) {
     $pathMarketplace = "./marketplace_$($subscription.Id).csv"
     Write-Verbose -Message "Getting resources from subscription $($subscription.Name)"
     Select-AzSubscription -SubscriptionObject $subscription
-    $ressources = Get-AzResource | Select-Object ResourceName, ResourceGroupName, ResourceType, Sku
+    $ressources = Get-AzResource | Select-Object ResourceName, ResourceGroupName, ResourceType, Sku, Location, @{Name='TagsString';Expression={if ($_.Tags) { ($_.Tags.GetEnumerator() | ForEach-Object {"$($_.Key)=$($_.Value)"}) -join ', ' } else { "None" }}}
     if ($ressources.Length -gt 0) {
         Write-Verbose -Message "$($ressources.Length) resources found"
         $ressources | Export-Csv -Path $pathInventory
@@ -61,4 +61,3 @@ foreach ($subscription in $subscriptions) {
         }
     }
 }
-
